@@ -90,6 +90,9 @@
           <div class="panel-heading">Submit Resume</div>
           <div class="panel-body">
             <form action="https://forminit.com/f/3l0vfgirdwp" method="POST" enctype="multipart/form-data">
+              <!-- Hidden field for custom redirect -->
+              <input type="hidden" name="_redirect" value="https://www.nkps.ai/career.html?success=true">
+              
               <div class="form-group">
                 <input name="name" type="text" class="form-control" placeholder="Name" required>
               </div>
@@ -97,10 +100,10 @@
                 <input name="email" type="email" class="form-control" placeholder="E-mail" required>
               </div>
               <div class="form-group">
-                <input name="phone" type="text" class="form-control" placeholder="Phone number">
+                <input name="phone" type="tel" class="form-control" placeholder="Phone number">
               </div>
               <div class="form-group">
-                <input name="location" type="text" class="form-control" placeholder="location">
+                <input name="location" type="text" class="form-control" placeholder="Location">
               </div>
               
               <div class="form-group">
@@ -128,10 +131,25 @@
               <div class="form-group">
                 <textarea name="message" placeholder="Message" class="form-control md-textarea" rows="3"></textarea>
               </div>
+              
+              <!-- Success message (hidden by default) -->
+              <div id="successMessage" class="alert alert-success" style="display:none;">
+                <strong>Success!</strong> Your application has been submitted successfully. We'll get back to you soon!
+              </div>
+              
               <div class="form-group">
                 <button class="btn btn-primary btn-block" type="submit">Submit</button>
               </div>
             </form>
+            
+            <script>
+              // Show success message if redirected back with success parameter
+              if (window.location.search.includes('success=true')) {
+                document.getElementById('successMessage').style.display = 'block';
+                // Remove success parameter from URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+              }
+            </script>
           </div>
         </div>
       </div>
