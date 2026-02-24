@@ -179,9 +179,14 @@ ipconfig /flushdns
 <!-- Email format (table layout) -->
 <input type="hidden" name="_template" value="table">
 
+<!-- Custom redirect to stay on career page -->
+<input type="hidden" name="_next" value="https://www.nkps.ai/career.html?success=true">
+
 <!-- Honeypot spam protection -->
 <input type="text" name="_honey" style="display:none">
 ```
+
+**Important**: The `_next` parameter ensures users stay on your website after submission instead of being redirected to FormSubmit's thank you page.
 
 ### 4.5 Technology Options
 The dropdown includes:
@@ -197,7 +202,39 @@ The dropdown includes:
 - Python
 - Python Django
 
-### 4.6 First-Time Setup (One-Time Only)
+### 4.6 Success Message Implementation
+**Objective**: Show success message on the same page without exposing email in URL
+
+**Success Alert HTML**:
+```html
+<div id="successAlert" class="alert alert-success" style="display:none; margin-bottom: 15px;">
+  <strong>Success!</strong> Your application has been submitted successfully. We'll get back to you soon!
+</div>
+```
+
+**JavaScript for Success Handling**:
+```javascript
+<script>
+  // Show success message if redirected back with success parameter
+  if (window.location.search.includes('success=true')) {
+    document.getElementById('successAlert').style.display = 'block';
+    // Scroll to the success message
+    document.getElementById('successAlert').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Remove success parameter from URL without page reload
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+</script>
+```
+
+**How It Works**:
+1. Form submits to FormSubmit.co
+2. FormSubmit redirects back to `career.html?success=true`
+3. JavaScript detects the `success=true` parameter
+4. Success message is displayed
+5. URL is cleaned (parameter removed)
+6. User stays on the career page
+
+### 4.7 First-Time Setup (One-Time Only)
 **Important**: FormSubmit requires email verification on first use
 
 **Steps**:
@@ -281,6 +318,15 @@ nslookup nkps.ai ns17.domaincontrol.com
 
 ### 6.3 Form Submission Issues
 
+**Problem**: Form redirects to FormSubmit page showing email in URL
+**Solution**:
+- Add `_next` hidden field with your career page URL
+- Implement success message with JavaScript
+- Use `window.history.replaceState()` to clean URL
+```html
+<input type="hidden" name="_next" value="https://www.nkps.ai/career.html?success=true">
+```
+
 **Problem**: Form not submitting
 **Solution**:
 - Check if FormSubmit email is confirmed
@@ -298,6 +344,18 @@ nslookup nkps.ai ns17.domaincontrol.com
 - Verify `enctype="multipart/form-data"` is in form tag
 - Check file size (FormSubmit limit: 10MB)
 - Ensure file input has `name="Resume"` attribute
+
+**Problem**: Success message not showing
+**Solution**:
+- Verify `_next` parameter includes `?success=true`
+- Check if JavaScript is loaded (jQuery required)
+- Ensure `successAlert` div ID matches in HTML and JavaScript
+
+**Problem**: Email visible in browser URL after submission
+**Solution**:
+- This was the default FormSubmit behavior
+- Fixed by adding custom `_next` redirect parameter
+- JavaScript cleans the URL after showing success message
 
 ---
 
@@ -320,6 +378,9 @@ nslookup nkps.ai ns17.domaincontrol.com
 - Supports file uploads (resume)
 - Email notifications to `satheeshreddy92@gmail.com`
 - Spam protection with honeypot
+- Custom redirect to stay on career page
+- Success message displayed without exposing email
+- Clean URL (no parameters visible after submission)
 - No backend server required
 
 ### Key Technologies Used
@@ -327,6 +388,12 @@ nslookup nkps.ai ns17.domaincontrol.com
 - **Domain**: GoDaddy DNS
 - **Form Service**: FormSubmit.co (Free)
 - **SSL**: Let's Encrypt (via GitHub Pages)
+
+### Common Issues Resolved
+1. **DNS Conflicts**: Removed "WebsiteBuilder Site" record from GoDaddy
+2. **Email Exposure**: Added custom redirect to prevent email showing in URL
+3. **User Experience**: Implemented on-page success message instead of external redirect
+4. **File Uploads**: Configured FormSubmit.co to support resume attachments
 
 ### Maintenance
 - **DNS Records**: No changes needed unless moving hosting
