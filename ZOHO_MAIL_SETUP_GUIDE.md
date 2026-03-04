@@ -32,7 +32,7 @@ This guide will help you create 3 professional email addresses with your domain 
 
 ### Step 3: Enter Organization Details
 1. **Organization Name**: Enter `Nkaizen` or `Nkaizen Consulting Services`
-2. **Email**: Enter your personal email (e.g., `satheeshreddy92@gmail.com`)
+2. **Email**: Enter your personal email (e.g., `info.nkaizen@gmail.com`)
    - This is for account recovery only
    - Your business emails will be separate
 3. **Phone Number**: Enter your phone number
@@ -340,7 +340,88 @@ Repeat for:
 - Add MX records manually in GoDaddy (see Part 3)
 - No need to access DNS Mapping in Zoho
 
-### Issue: Not receiving emails / "Message not delivered" error
+### Issue: Can send emails but cannot receive emails
+**Symptoms**: 
+- ✅ Can send emails FROM `info@nkps.ai` to Gmail successfully
+- ❌ Cannot receive emails TO `info@nkps.ai` from Gmail
+- Email bounces with "553 Relaying disallowed" or "remote server is misconfigured"
+- Sender receives delivery failure notification
+
+**Root Cause**: 
+MX records have been added to GoDaddy but Zoho hasn't verified them yet, or DNS propagation is not complete.
+
+**Solution**:
+1. **Verify MX records in Zoho Admin Panel**:
+   - Login to https://mailadmin.zoho.com/
+   - Go to "Domains" → Click on your domain
+   - Go to "Email Configuration" → "MX"
+   - Click the **"Verify"** button to force Zoho to check MX records
+   - Wait 2-3 minutes and try again if verification fails
+   - Domain status should change from "Yet to point MX Records" to "Completed"
+
+2. **Wait for DNS propagation** (if MX records not showing in MXToolbox):
+   - Minimum wait: 30 minutes
+   - Average wait: 1-2 hours
+   - Maximum wait: 24-48 hours (rare)
+
+3. **Verify MX records are added correctly in GoDaddy**:
+   - Login to GoDaddy DNS Management
+   - Confirm these 3 MX records exist:
+     - `mx.zoho.com` (Priority: 10)
+     - `mx2.zoho.com` (Priority: 20)
+     - `mx3.zoho.com` (Priority: 50)
+   - Ensure no old/conflicting MX records exist
+   - Name field should be `@` (not blank)
+   - No trailing dots after `.com`
+
+4. **Check MX record propagation status**:
+   - Go to: https://mxtoolbox.com/SuperTool.aspx
+   - Enter: `nkps.ai`
+   - Select: **MX Lookup**
+   - You should see Zoho's MX records listed
+   - If not showing yet, wait longer for propagation
+
+5. **Test with command line**:
+   ```cmd
+   nslookup -type=MX nkps.ai 8.8.8.8
+   ```
+   Expected output:
+   ```
+   nkps.ai MX preference = 10, mail exchanger = mx.zoho.com
+   nkps.ai MX preference = 20, mail exchanger = mx2.zoho.com
+   nkps.ai MX preference = 50, mail exchanger = mx3.zoho.com
+   ```
+
+6. **Wait for Zoho mail servers to sync** (after MX verification):
+   - Even after Zoho verifies MX records, mail servers need 10-30 minutes to sync
+   - Domain status will show "Completed" in Zoho admin
+   - Wait 15-20 minutes after status changes to "Completed"
+   - Then test receiving emails again
+
+7. **After everything is verified**:
+   - Test sending email from Gmail to `info@nkps.ai`
+   - Check Zoho Mail inbox at https://mail.zoho.com/
+   - Check spam folder in Zoho Mail
+   - If still not working, contact Zoho support
+
+**Resolution Timeline**:
+- MX records added to GoDaddy: Immediate
+- DNS propagation: 30 min - 2 hours
+- Zoho MX verification: Manual (click "Verify" button)
+- Zoho mail server sync: 10-30 minutes after verification
+- Total time: 1-3 hours typically
+
+**Current Status** (as of setup):
+- ✅ Domain verified with TXT record
+- ✅ 3 email accounts created (`info@nkps.ai`, `admin@nkps.ai`, `developers@nkps.ai`)
+- ✅ MX records added to GoDaddy and verified by Zoho
+- ✅ SPF record configured
+- ✅ Can send emails FROM `info@nkps.ai` to external addresses
+- ✅ Can receive emails TO `info@nkps.ai` and other accounts
+- ✅ Domain status: "Completed" in Zoho admin panel
+- ✅ MFA enabled with OneAuth authenticator app
+
+### Issue: Not receiving emails / "Message not delivered" error (General)
 **Symptoms**: 
 - Email bounces with "553 Relaying disallowed" or "remote server is misconfigured"
 - Sender receives delivery failure notification
@@ -441,19 +522,79 @@ TXT | zoho._domainkey | (DKIM value) | 1 Hour
 ## Next Steps
 
 1. ✅ Complete Zoho Mail setup
-2. ✅ Create 3 email accounts
-3. ✅ Configure DNS records
-4. ✅ Test sending and receiving
-5. ✅ Update career form to use `careers@nkps.ai`
-6. ✅ Set up email forwarding (optional)
-7. ✅ Configure email signature
-8. ✅ Set up mobile app
+2. ✅ Create 3 email accounts (`info@nkps.ai`, `admin@nkps.ai`, `developers@nkps.ai`)
+3. ✅ Configure DNS records (MX, SPF, TXT verification)
+4. ✅ MX records verified by Zoho (domain status: "Completed")
+5. ✅ Test receiving emails - working successfully
+6. ✅ Enable MFA with OneAuth authenticator app
+7. ⬜ Update career form to use `careers@nkps.ai` (optional - create account first)
+8. ⬜ Set up email forwarding (optional)
+9. ⬜ Configure email signature
+10. ⬜ Set up mobile app
+
+**Final Status**:
+- ✅ Sending emails works perfectly
+- ✅ Receiving emails works perfectly
+- ✅ MFA enabled for enhanced security
+- ✅ All email accounts active and functional
+
+---
+
+## Part 11: Enable Multi-Factor Authentication (MFA)
+
+**Highly Recommended for Security!**
+
+### Step 1: Access Security Settings
+1. Login to Zoho Mail at https://mail.zoho.com/
+2. Click your **profile picture** (top right)
+3. Click **"My Account"** or **"Account Settings"**
+4. Go to **"Security"** section
+
+### Step 2: Enable Two-Factor Authentication
+1. Find **"Two-Factor Authentication"** or **"2FA"**
+2. Click **"Enable"** or **"Set up"**
+3. Choose authentication method:
+   - **Authenticator App** (Recommended): OneAuth, Google Authenticator, Microsoft Authenticator
+   - **SMS**: Receive codes via text message
+   - **Email**: Receive codes via email
+
+### Step 3: Set Up Authenticator App (Recommended)
+1. Download authenticator app:
+   - **OneAuth** (Zoho's app): https://www.zoho.com/oneauth/
+   - **Google Authenticator**: iOS/Android app stores
+   - **Microsoft Authenticator**: iOS/Android app stores
+
+2. Open the authenticator app
+3. Scan the QR code shown in Zoho
+4. Enter the 6-digit code from the app
+5. Save backup codes (important for account recovery!)
+
+### Step 4: Test MFA
+1. Logout from Zoho Mail
+2. Login again with email and password
+3. Enter the 6-digit code from authenticator app
+4. Verify login works
+
+**Benefits of MFA**:
+- ✅ Protects against password theft
+- ✅ Prevents unauthorized access
+- ✅ Required for compliance (GDPR, SOC 2)
+- ✅ Industry best practice
 
 ---
 
 **Setup Time**: 30-60 minutes (including DNS propagation wait time)
 
-**Documentation Created**: February 2026
+**Setup Completed**: March 2026
+
+**Final Configuration**:
+- ✅ Domain: nkps.ai
+- ✅ Email Accounts: info@nkps.ai, admin@nkps.ai, developers@nkps.ai
+- ✅ MX Records: Verified and working
+- ✅ SPF Record: Configured
+- ✅ Sending: Working
+- ✅ Receiving: Working
+- ✅ MFA: Enabled with OneAuth
 
 ---
 
